@@ -1,209 +1,186 @@
 import Head from 'next/head'
+import { useState, useEffect } from 'react';
+import Select from 'react-select';
+import dynamic from 'next/dynamic'
+import dayjs from 'dayjs';
+import { getHistoryData } from '../api/fetch';
+
 
 export default function Home() {
-  return (
-    <div className="container">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
 
-      <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+  // const yahooFinance = require('yahoo-finance');
+  const options = [
+    { value: 'chocolate', label: 'Chocolate' },
+    { value: 'strawberry', label: 'Strawberry' },
+    { value: 'vanilla', label: 'Vanilla' }
+  ]
 
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
 
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+  const DynamicComponentWithNoSSR = dynamic( () => import('react-apexcharts'),{ ssr: false } )
+  const [history, setHistory] = useState({})
+  const [ticker, setTicker] = useState('')
+  const handleInput = async e => { 
+    setTicker(e.target.value)
+  }
+  const setData = async (data) => {
+    // state.series[0].data = [];
+    var series = []
+    setState({}b)
+    console.log(`setData`)
+   await data.forEach((obj, idx) => {
+      series.push({
+        x: obj.date,
+        y:[obj.open, obj.high, obj.low, obj.close]
+      })
+      // state.series[0].data.push({
+      //   x: obj.date,
+      //   y:[obj.open, obj.high, obj.low, obj.close]
+      // });
+    })
+    // setState({'series': series})
+    setState({series:[{name:'candle',data:series}]})
+    console.log(series)
+  }
+  
+  const [state, setState] = useState(
+    {
+      series: [{
+        name: 'candle',
+        data: [
+          {
+            // Open, High, Low, Close
+            x: new Date(1538778600000),
+            y: [6629.81, 6650.5, 6623.04, 6633.33]
+          },
+          {
+            x: new Date(1538780400000),
+            y: [6632.01, 6643.59, 6620, 6630.11]
+          }
+        ]
+      }], 
+    }
+  );
+  const [opt, setOpt] = useState(
+    { options: {
+        chart: {
+          height: 350,
+          type: 'candlestick'
+        },
+        title: {
+          text: 'CandleStick Chart - Cateogry X-axis',
+          align: 'left'
+        },
+        annotations: {
+          xaxis: [
+            {
+              x: 'Oct 06 14:00',
+              borderColor: '#00E396',
+              label: {
+                borderColor: '#00E396',
+                style: {
+                  fontSize: '12px',
+                  color: '#fff',
+                  background: '#00E396'
+                },
+                orientation: 'horizontal',
+                offsetY: 7,
+                text: 'Annotation Test'
+              }
+            }
+          ]
+        }, tooltip: {
+          enabled: true,
+        }, xaxis: {
+          type: 'category',
+          labels: {
+            formatter: function (val) {
 
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className="logo" />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
+              return dayjs(val).format('MMM DD HH:mm')
+            }
+          }
+        },
+        yaxis: {
+          tooltip: {
+            enabled: true
           }
         }
-      `}</style>
+      }}
+  )
+  useEffect(() => {
+    console.log(state)
+    return () => {
+      // cleanup
+    }
+  }, [])
 
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
+  return (
+    <div>
+      <Head>
+        <title>주식 시뮬레이터</title>
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
 
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" />
+      </Head>
+      <nav className="navbar" role="navigation" aria-label="main navigation">
+        <div className="navbar-brand">
+          <a className="navbar-item" href="https://bulma.io">
+            <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28" />
+          </a>
+          <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+        <div id="" className="navbar-menu" >
+          <div className="navbar-start">
+            <a className="navbar-item">MACD</a>
+            <a className="navbar-item">MACD시뮬레이터</a> 
+          </div>
+        </div> 
+      </nav>
+
+      <main>
+        <container className="container">
+          <section className="section">
+
+            <div className="columns">
+              <div className="column is-one-fifth">
+                {/* <Select options={options} /> */}
+                <div className="control">
+                  <input className="input" type="text" placeholder="AAPL" value={ticker} onChange={handleInput} />
+                  <button className="button" onClick={async () => {
+                    const resp = await getHistoryData(ticker)
+                    // setHistory(resp)
+                    setData(resp)
+                  }}>조회</button>
+
+                </div>
+              </div>
+            </div>
+            <div className="columns is-centered">
+              <div className="column is-half">
+                <DynamicComponentWithNoSSR options={opt} series={state.series} type="candlestick" height={350} />
+                <div id="chart">
+
+                </div>
+              </div>
+            </div>
+          </section>
+        </container>
+      </main>
+
+      <footer className="footer">
+        <div className="content has-text-centered">
+          <p>
+            <strong>Bulma</strong> by <a href="https://jgthms.com">Jeremy Thomas</a>. The source code is licensed
+            <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+          </p>
+        </div>
+      </footer>
+
     </div>
   )
 }
